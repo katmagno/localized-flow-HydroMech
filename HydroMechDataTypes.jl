@@ -10,12 +10,12 @@ using ParallelStencil
     ηC0      = 1.0             # reference bulk viscosity
     # Physics - non-dimensional parameters
     η2μs     = 10.0            # bulk/shear viscosity ration 10
-    R        = 800.0           # Compaction/decompaction strength ratio for bulk rheology 800
-    nperm    = 2.7         # Carman-Kozeny exponent
+    R        = 50.0           # Compaction/decompaction strength ratio for bulk rheology 800
+    nperm    = 2.1         # Carman-Kozeny exponent
     ϕ0       = 0.02            # reference porosity
     ra       = 2               # radius of initil porosity perturbation
     λ0       = 1.0             # standard deviation of initial porosity perturbation
-    t_tot    = 0.5     # total time
+    t_tot    = 0.55     # total time
     # Physics - dependent scales
     ρsg      = 2.0*ρfg         # solid rho*g 2.0
     lx       = 35              # domain size x
@@ -121,7 +121,7 @@ function initialize_variables!(variables::HydroMechVariables, constants::HydroMe
     topA     =   cumsum(rand(nx,1), dims = 1)
     top      =   my_1D_detrend(topA)
     top      =   top .- minimum(top)
-    top      =   top./maximum(top)*ly/10*7 # Default is 7 for heterogeneous reservoir-overlying sediment interface
+    top      =   top./maximum(top)*ly/10 # Default is 7 for heterogeneous reservoir-overlying sediment interface
     Phi      =   ϕ0*ones(nx  ,ny)
     μs       =   μs0
     for iy in 1:ny

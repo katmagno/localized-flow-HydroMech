@@ -2,7 +2,7 @@
 # The algorithm consists of an outer loop that simulates the progression of time in dt increments and
 # an inner loop that runs an approximation algorithm that is optimized using parallelization via the
 # ParallelStencil module. 
-const USE_GPU = true # Use GPU? If this is set false, then no GPU needs to be available
+const USE_GPU = false # Use GPU? If this is set false, then no GPU needs to be available
 using ParallelStencil
 using ParallelStencil.FiniteDifferences2D
 using DelimitedFiles
@@ -27,7 +27,7 @@ include("HydroMechFunctions.jl")
     @unpack dτPf, Vx, Vy, qDx, qDy, Ry, RPf, ∇V, qDys, Phi, Pt, Pf = variables
     # Preparation of visualisation
     ENV["GKSwstype"]="nul";
-    if isdir(string(nperm) * "np21")==false mkdir(string(nperm) * "np21") end; loadpath = "./" * string(nperm) * "np21" * "/"; anim = Animation(loadpath,String[])
+    if isdir(string(nperm) * "_poro_AdjDepth_viz2D_out_16")==false mkdir(string(nperm) * "_poro_AdjDepth_viz2D_out_16") end; loadpath = "./" * string(nperm) * "_poro_AdjDepth_viz2D_out_16" * "/"; anim = Animation(loadpath,String[])
     println("Animation directory: $(anim.dir)")
     X, Y, Yv = 0:dx:lx, 0:dy:ly, (-dy/2):dy:(ly+dy/2)
     # Time loop
@@ -71,8 +71,9 @@ include("HydroMechFunctions.jl")
         push!(times,t)
         it+=1
         # Visualisation
+        delta_C = 22.36
         default(size=(800,700))
-        if mod(it,220)==0
+        if mod(it,5)==0
             #p1 = heatmap(X, Y,  Array(Phi)'  , aspect_ratio=1, xlims=(X[1],X[end]), ylims=(Y[1],Y[end]), c=:viridis, title="Porosity")
             #p2 = heatmap(X, Y,  Array(Pf)', aspect_ratio=1, xlims=(X[1],X[end]), ylims=(Y[1],Y[end]), c=:viridis, xlabel="L_x",  ylabel="L_y", title="Fluid Pressure, time= " * string(round(t, digits = 3)))
             p3 = heatmap(X, Yv, Array(qDy)'  , aspect_ratio=1, xlims=(X[1],X[end]), ylims=(Yv[1],Yv[end]), c=:viridis, xlabel="L_x",  ylabel="L_y", title="Vertical Darcy Flux, time= " * string(round(t, digits = 3)))
@@ -80,25 +81,14 @@ include("HydroMechFunctions.jl")
             display(plot(p3));
             frame(anim);
         end
-        save_folder = "np21"
-        path_name = "/home/users/kmagno/localized-flow-HydroMech/" * save_folder * "/"
-        fnm2 = string(nperm)
-        fnm3 = string(t_tot)
-        fnm4 = string(res)
-        if mod(it,100)==0
-            fnm_qDys = path_name * "qDys_nperm" * fnm2 * "_ttot" * fnm3 * "_res" * fnm4 * ".csv"
-            writedlm(fnm_qDys, Array(qDys), ',')
-            fnm_Phi = path_name * "Phi_nperm" * fnm2 * "_ttot" * fnm3 * "_res" * fnm4 * ".csv"
-            writedlm(fnm_Phi, Array(Phi), ',')
-        end
     end
-    save_folder = "np21"
-    path_name = "/home/users/kmagno/localized-flow-HydroMech/" * save_folder * "/"
+    save_folder = "Darcy"
+    path_name = "/home/users/kmagno/pockmark-degassing/For_Quals/" * save_folder * "/"
     fnm2 = string(nperm)
     fnm3 = string(t_tot)
     fnm4 = string(res)
     fnm_times = path_name * "times_nperm" * fnm2 * "_ttot" * fnm3 * "_res" * fnm4 * ".csv"
-    fnm_gif = path_name * "HydroMech2D_nperm" * fnm2 * "_ttot" * fnm3 * "_res" * fnm4 * ".gif"
+    fnm_gif = path_name * "HydroMech2D_nperm" * fnm2 * "_ttot" * fnm3 * "_res" * fnm4 * "16.gif"
     gif(anim, fnm_gif, fps = 5)
     return
 end

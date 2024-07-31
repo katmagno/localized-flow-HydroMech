@@ -1,7 +1,7 @@
 close all;
 clear all;
 % Physical Params
-perms = [5e-16];
+perms = [5e-15];
 % Reservoir-Sediment Interface Morphology, uniform (u) or heterogeneous (h)
 morph = 'h';
 if morph == 'h'
